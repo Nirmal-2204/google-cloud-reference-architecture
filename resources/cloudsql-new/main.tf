@@ -26,23 +26,23 @@ resource "random_string" "cloudsql_user_password" {
   upper   = true
 }
 
+data "google_compute_network" "private_network" {
+  name = "default"
+}
+
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sql_database_instance
 resource "google_sql_database_instance" "instance" {
   name                = "instance-${random_string.cloudsql_instance_name.result}"
   database_version    = var.database_version
-  region              = var.location
+  region              = us-east1
   deletion_protection = var.instance_deletion_protection
 
   settings {
     tier = var.tier
 
     ip_configuration {
-      dynamic "authorized_networks" {
-        for_each = var.authorized_networks
-        content {
-          value = authorized_networks.value
-        }
-      }
+     ipv4_enabled = "true"
+     private_network = data.google_compute_network.private_network.self_link
     }
   }
 }
