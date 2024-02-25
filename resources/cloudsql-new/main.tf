@@ -34,7 +34,7 @@ data "google_compute_network" "private_network" {
 resource "google_sql_database_instance" "instance" {
   name                = "instance-${random_string.cloudsql_instance_name.result}"
   database_version    = var.database_version
-  region              = us-east1
+  region              = var.location
   deletion_protection = var.instance_deletion_protection
 
   settings {
